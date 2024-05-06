@@ -116,27 +116,32 @@ class DemoHelper private constructor(){
                 .enableHonorPush()                                  // need to configure appid in AndroidManifest.xml
                 .build()
 
-            if (dataModel.isCustomSetEnable()) {
-                dataModel.getCustomAppKey()?.let {
-                    appKey = it
-                }
-                if (dataModel.isCustomServerEnable()) {
-                    // Turn off DNS configuration
-                    enableDNSConfig(false)
-                    restServer = dataModel.getRestServer()?.ifEmpty { null }
-                    setIMServer(dataModel.getIMServer()?.let {
-                        if (it.contains(":")) {
-                            imPort = it.split(":")[1].toInt()
-                            it.split(":")[0]
-                        } else {
-                            it.ifEmpty { null }
+            val isDeveloperMode = getInstance().getDataModel().isDeveloperMode()
+            if (isDeveloperMode){
+                if (dataModel.isCustomSetEnable()) {
+                    dataModel.getCustomAppKey()?.let {
+                        appKey = it
+                    }
+                    if (dataModel.isCustomServerEnable()) {
+                        // Turn off DNS configuration
+                        enableDNSConfig(false)
+                        restServer = dataModel.getRestServer()?.ifEmpty { null }
+                        setIMServer(dataModel.getIMServer()?.let {
+                            if (it.contains(":")) {
+                                imPort = it.split(":")[1].toInt()
+                                it.split(":")[0]
+                            } else {
+                                it.ifEmpty { null }
+                            }
+                        })
+                        val port = dataModel.getIMServerPort()
+                        if (port != 0) {
+                            imPort = port
                         }
-                    })
-                    val port = dataModel.getIMServerPort()
-                    if (port != 0) {
-                        imPort = port
                     }
                 }
+            }else{
+                enableDNSConfig(true)
             }
         }
     }

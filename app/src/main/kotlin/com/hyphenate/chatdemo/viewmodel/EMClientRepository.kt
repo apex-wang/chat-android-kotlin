@@ -99,14 +99,34 @@ class EMClientRepository: BaseRepository() {
         withContext(Dispatchers.IO) {
             suspendCoroutine { continuation ->
                 if (ChatClient.getInstance().isLoggedIn.not()) {
-                    if (DemoHelper.getInstance().getDataModel().isCustomSetEnable()) {
+                    val isDeveloperMode = DemoHelper.getInstance().getDataModel().isDeveloperMode()
+                    if (isDeveloperMode){
                         DemoHelper.getInstance().getDataModel().getCustomAppKey()?.let {
                             if (it.isNotEmpty()) {
                                 ChatClient.getInstance().changeAppkey(it)
                             }
                         }
-                    } else {
+                        if (DemoHelper.getInstance().getDataModel().isCustomSetEnable()) {
+                            ChatClient.getInstance().options.enableDNSConfig(false)
+                            DemoHelper.getInstance().getDataModel().getIMServer()?.let {
+                                if (it.isNotEmpty()){
+                                    ChatClient.getInstance().options.setIMServer(it)
+                                }
+                            }
+                            DemoHelper.getInstance().getDataModel().getRestServer()?.let {
+                                if (it.isNotEmpty()){
+                                    ChatClient.getInstance().options.restServer = it
+                                }
+                            }
+                            DemoHelper.getInstance().getDataModel().getIMServerPort().let {
+                                if (it != 0){
+                                    ChatClient.getInstance().options.imPort = it
+                                }
+                            }
+                        }
+                    }else{
                         ChatClient.getInstance().changeAppkey(BuildConfig.APPKEY)
+                        ChatClient.getInstance().options.enableDNSConfig(true)
                     }
                 }
                 if (isTokenFlag) {

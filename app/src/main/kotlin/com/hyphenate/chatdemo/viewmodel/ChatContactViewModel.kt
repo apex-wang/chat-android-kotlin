@@ -5,6 +5,7 @@ import com.hyphenate.chatdemo.DemoHelper
 import com.hyphenate.chatdemo.common.room.entity.parse
 import com.hyphenate.easeui.EaseIM
 import com.hyphenate.easeui.common.ChatClient
+import com.hyphenate.easeui.common.ChatLog
 import com.hyphenate.easeui.common.extensions.catchChatException
 import com.hyphenate.easeui.common.extensions.toUser
 import com.hyphenate.easeui.common.helper.ContactSortedHelper
@@ -42,6 +43,7 @@ class ChatContactViewModel: EaseContactListViewModel() {
                 }
             } else {
                 flow {
+                    ChatLog.e("ChatContactViewModel","loadLocalContact")
                     emit(contactRepository.loadLocalContact())
                 }
             }
@@ -50,6 +52,7 @@ class ChatContactViewModel: EaseContactListViewModel() {
                 }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis), null)
                 .collect {
+                    ChatLog.e("ChatContactViewModel","loadLocalContact size ${it?.size}")
                     val data = it?.map { user->
                         val contactInfo = ChatClient.getInstance().contactManager().fetchContactFromLocal(user.userId)
                         val profile = DemoHelper.getInstance().getDataModel().getUser(user.userId)?.parse()?: EaseProfile(user.userId)

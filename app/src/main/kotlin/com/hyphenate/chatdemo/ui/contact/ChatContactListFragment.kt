@@ -44,6 +44,7 @@ class ChatContactListFragment : EaseContactsListFragment() {
 
     override fun loadContactListSuccess(userList: MutableList<EaseUser>) {
         super.loadContactListSuccess(userList)
+        ChatLog.e(TAG,"loadContactListSuccess: ${userList.size}")
         if (!isFirstLoadData){
             fetchFirstVisibleData()
             isFirstLoadData = true
